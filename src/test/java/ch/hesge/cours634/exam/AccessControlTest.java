@@ -5,12 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class AccessControlTest {
 
     // on utilisera pour les tests les personnes marie et fred
-
-
     @Before
     @After
     public void cleanup() {
@@ -24,15 +21,13 @@ public class AccessControlTest {
 
         JPAHelper.remove(PersonEntity.class, email);
 
-
         PersonEntity p1 = new PersonEntity();
         p1.setName("Fred");
         p1.setCategory(Category.EMPLOYEE);
         p1.setEmail(email);
         p1.setAddress("rue de Saint Julien 60, 1212 Lancy");
         JPAHelper.persist(p1);
-		
-		
+
         PersonEntity p2 = JPAHelper.em().find(PersonEntity.class, email);
         Assert.assertEquals(p1, p2);
     }
