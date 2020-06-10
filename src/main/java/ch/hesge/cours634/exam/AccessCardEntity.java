@@ -17,9 +17,6 @@ public class AccessCardEntity {
 
     private boolean isEnabled;
 
-    @ManyToOne
-    private PersonEntity owner;
-
     public AccessCardEntity() {
     }
 
@@ -61,14 +58,6 @@ public class AccessCardEntity {
         isEnabled = enabled;
     }
 
-    public PersonEntity getOwner() {
-        return owner;
-    }
-
-    public void setOwner(PersonEntity owner) {
-        this.owner = owner;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,7 +81,6 @@ public class AccessCardEntity {
                 ", startValidity=" + startValidity +
                 ", endValidity=" + endValidity +
                 ", isEnabled=" + isEnabled +
-                ", owner=" + owner +
                 '}';
     }
 }

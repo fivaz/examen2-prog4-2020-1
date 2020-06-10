@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class AccessControlTest {
 
@@ -34,7 +35,6 @@ public class AccessControlTest {
         Assert.assertEquals(p1, p2);
     }
 
-
     @Test
     public void scenario2() {
         // créez Marie et lui affecter une carte valable du 01.01.2020 au 01.01.2021
@@ -42,26 +42,34 @@ public class AccessControlTest {
         AccessManager accessManager = new AccessManager();
         PersonEntity personExpected = accessManager.addPerson(email, "Marie", "3 Rue Cavour", Category.EMPLOYEE);
         AccessCardEntity cardCreated = accessManager.addCard(LocalDate.of(2020, 1, 1), LocalDate.of(2021, 1, 1));
-        AccessCardEntity cardExpected = accessManager.assignCardToUser(cardCreated.getCardId(), personExpected.getEmail());
-        System.out.println("cardExpected.getOwner()");
-        System.out.println(cardExpected.getOwner());
+        accessManager.assignCardToUser(cardCreated.getCardId(), personExpected.getEmail());
         // vérifiez que la personne existe et qu'elle posséde bien la carte
         PersonEntity personGot = JPAHelper.em().find(PersonEntity.class, email);
         AccessCardEntity cardGot = JPAHelper.em().find(AccessCardEntity.class, cardCreated.getCardId());
-        System.out.println("cardGot.getOwner()");
-        System.out.println(cardGot.getOwner());
-        //TODO corriger ce assert
         Assert.assertEquals(personExpected, personGot);
-        Assert.assertEquals(cardExpected, cardGot);
-        Assert.assertEquals(cardExpected.getOwner(), cardGot.getOwner());
+        Assert.assertEquals(cardGot, personGot.getCard());
     }
-
 
     @Test
     public void scenario3() {
         // Reprenez scenario 2
+        String email = "marie@b.com";
+        LocalDate startValidity = LocalDate.of(2020, 1, 1);
+        LocalDate endValidity = LocalDate.of(2021, 1, 1);
+        AccessManager accessManager = new AccessManager();
+        PersonEntity personExpected = accessManager.addPerson(email, "Marie", "3 Rue Cavour", Category.EMPLOYEE);
+        AccessCardEntity cardCreated = accessManager.addCard(startValidity, endValidity);
+        accessManager.assignCardToUser(cardCreated.getCardId(), personExpected.getEmail());
         // La personne effectue plusieurs entrées et sorties
+        accessManager.enter(cardCreated.getCardId());
+        accessManager.exit(cardCreated.getCardId());
+        accessManager.enter(cardCreated.getCardId());
+        accessManager.exit(cardCreated.getCardId());
+        accessManager.enter(cardCreated.getCardId());
+        accessManager.exit(cardCreated.getCardId());
         // Vérifiez que le système a enregistré les bons événements
+        List<AccessEventEntity> userAccessEvents = new EventManager().getUserAccessEvents(email, startValidity.atStartOfDay(), endValidity.atStartOfDay());
+        System.out.println(userAccessEvents.size());
+        Assert.assertEquals(6, userAccessEvents.size());
     }
-
 }

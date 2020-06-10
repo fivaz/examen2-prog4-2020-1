@@ -1,8 +1,6 @@
 package ch.hesge.cours634.exam;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -15,8 +13,8 @@ public class PersonEntity {
     private String address;
     @Enumerated(EnumType.STRING)
     private Category category;
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<AccessCardEntity> cards;
+    @OneToOne
+    private AccessCardEntity card;
 
     public PersonEntity() {
     }
@@ -26,7 +24,6 @@ public class PersonEntity {
         this.name = name;
         this.address = address;
         this.category = category;
-        this.cards = new ArrayList<>();
     }
 
     public String getEmail() {
@@ -61,12 +58,12 @@ public class PersonEntity {
         this.category = category;
     }
 
-    public List<AccessCardEntity> getCards() {
-        return cards;
+    public AccessCardEntity getCard() {
+        return card;
     }
 
-    public void setCards(List<AccessCardEntity> cards) {
-        this.cards = cards;
+    public void setCard(AccessCardEntity card) {
+        this.card = card;
     }
 
     @Override
