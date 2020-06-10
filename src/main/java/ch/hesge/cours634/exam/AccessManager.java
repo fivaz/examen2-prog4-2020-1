@@ -1,22 +1,34 @@
 package ch.hesge.cours634.exam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class AccessManager {
 
     public PersonEntity addPerson(String email, String name, String address, Category category) {
         // Ajouter une personne et la retourner
-        return null;
+        PersonEntity personEntity = new PersonEntity(email, name, address, category);
+        JPAHelper.persist(personEntity);
+        return personEntity;
     }
 
     public AccessCardEntity addCard(LocalDate startValidity, LocalDate endValidity) {
         // Créer une nouvelle carte et la retourner
-        return null;
+        AccessCardEntity accessCardEntity = new AccessCardEntity(startValidity, endValidity, false);
+        JPAHelper.persist(accessCardEntity);
+        return accessCardEntity;
     }
 
     public AccessCardEntity assignCardToUser(int cardId, String personEmail) {
         // La carte et la personne doivent exister au préalable. On active la carte à l'affectation.
-        return null;
+        PersonEntity person = JPAHelper.em().find(PersonEntity.class, personEmail);
+        AccessCardEntity card = JPAHelper.em().find(AccessCardEntity.class, cardId);
+        card.setEnabled(true);
+        List<AccessCardEntity> cards = person.getCards();
+        cards.add(card);
+        card.setOwner(person);
+        JPAHelper.merge(person);
+        return card;
     }
 
     public void enter(int cardId) {

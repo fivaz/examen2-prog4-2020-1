@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 public class AccessControlTest {
 
     // on utilisera pour les tests les personnes marie et fred
@@ -37,8 +39,21 @@ public class AccessControlTest {
     public void scenario2() {
         // créez Marie et lui affecter une carte valable du 01.01.2020 au 01.01.2021
         String email = "marie@b.com";
-
+        AccessManager accessManager = new AccessManager();
+        PersonEntity personExpected = accessManager.addPerson(email, "Marie", "3 Rue Cavour", Category.EMPLOYEE);
+        AccessCardEntity cardCreated = accessManager.addCard(LocalDate.of(2020, 1, 1), LocalDate.of(2021, 1, 1));
+        AccessCardEntity cardExpected = accessManager.assignCardToUser(cardCreated.getCardId(), personExpected.getEmail());
+        System.out.println("cardExpected.getOwner()");
+        System.out.println(cardExpected.getOwner());
         // vérifiez que la personne existe et qu'elle posséde bien la carte
+        PersonEntity personGot = JPAHelper.em().find(PersonEntity.class, email);
+        AccessCardEntity cardGot = JPAHelper.em().find(AccessCardEntity.class, cardCreated.getCardId());
+        System.out.println("cardGot.getOwner()");
+        System.out.println(cardGot.getOwner());
+        //TODO corriger ce assert
+        Assert.assertEquals(personExpected, personGot);
+        Assert.assertEquals(cardExpected, cardGot);
+        Assert.assertEquals(cardExpected.getOwner(), cardGot.getOwner());
     }
 
 
